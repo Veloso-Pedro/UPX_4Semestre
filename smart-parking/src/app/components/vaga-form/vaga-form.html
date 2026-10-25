@@ -1,0 +1,55 @@
+<form class="form-nova-vaga" (ngSubmit)="salvar()">
+  <div class="form-title">
+    <h3>Cadastrar Novo Sensor</h3>
+    <span class="hint">Clique no mapa para pegar a posição</span>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Código da Vaga</label>
+      <input type="text" [(ngModel)]="codigo" name="codigo" placeholder="Ex: C-01" required />
+    </div>
+
+    <div class="form-group">
+      <label>Tarifa (R$/h)</label>
+      <input type="number" step="0.50" [(ngModel)]="preco_hora" name="preco_hora" required />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Tipo</label>
+      <select [(ngModel)]="tipo" name="tipo">
+        <option value="COMUM">Comum</option>
+        <option value="ELETRICO">Elétrico</option>
+        <option value="PCD">PCD</option>
+        <option value="IDOSO">Idoso</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Status Inicial</label>
+      <select [(ngModel)]="status" name="status">
+        <option value="LIVRE">Livre</option>
+        <option value="OCUPADA">Ocupada</option>
+        <option value="RESERVADA">Reservada</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Latitude</label>
+      <input type="number" step="0.000001" [(ngModel)]="lat" name="lat" required />
+    </div>
+    <div class="form-group">
+      <label>Longitude</label>
+      <input type="number" step="0.000001" [(ngModel)]="lng" name="lng" required />
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button type="button" class="btn-cancelar" (click)="fechar.emit()">Cancelar</button>
+    <button type="submit" class="btn-salvar" [disabled]="!codigo.trim()">Salvar Vaga</button>
+  </div>
+</form>

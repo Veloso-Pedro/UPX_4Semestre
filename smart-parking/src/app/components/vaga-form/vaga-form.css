@@ -1,0 +1,80 @@
+.form-nova-vaga {
+  background: #0f172a;
+  border: 1px solid #3b82f6;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-title h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #60a5fa;
+}
+
+.form-title .hint {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.form-group input,
+.form-group select {
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.form-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-cancelar {
+  background: #334155;
+  color: #f8fafc;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-salvar {
+  background: #22c55e;
+  color: #052e16;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-salvar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

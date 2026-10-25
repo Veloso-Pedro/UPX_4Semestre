@@ -1,0 +1,122 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 16px 24px;
+  box-sizing: border-box;
+  gap: 16px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e293b;
+  padding: 16px 24px;
+  border-radius: 12px;
+  border: 1px solid #334155;
+
+  h1 { margin: 0; font-size: 1.4rem; }
+  .subtitle { color: #94a3b8; font-size: 0.85rem; }
+}
+
+.kpis {
+  display: flex;
+  gap: 16px;
+
+  .kpi-card {
+    background: #0f172a;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .kpi-label { font-size: 0.75rem; color: #94a3b8; }
+    .kpi-value { font-size: 1.3rem; &.livre { color: #22c55e; } }
+  }
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.map-section {
+  background: #1e293b;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #334155;
+
+  #mapa-vagas {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.vagas-sidebar {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  h2 { margin: 0 0 12px 0; font-size: 1.1rem; }
+}
+
+.vagas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vaga-card {
+  background: #0f172a;
+  border-radius: 10px;
+  padding: 14px;
+  border-left: 6px solid #64748b;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover { transform: translateY(-2px); }
+  &.livre { border-left-color: #22c55e; .badge { background: rgba(34, 197, 94, 0.2); color: #4ade80; } }
+  &.ocupada { border-left-color: #ef4444; .badge { background: rgba(239, 68, 68, 0.2); color: #f87171; } }
+  &.reservada { border-left-color: #eab308; .badge { background: rgba(234, 179, 8, 0.2); color: #facc15; } }
+}
+
+.vaga-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+
+  .codigo { font-size: 1.2rem; font-weight: 700; }
+  .badge { padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+}
+
+.vaga-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  margin-bottom: 12px;
+}
+
+.btn-simular {
+  width: 100%;
+  padding: 8px;
+  background: #334155;
+  color: #f8fafc;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover { background: #475569; }
+}

@@ -1,0 +1,62 @@
+<div class="dashboard-container">
+  <header class="topbar">
+    <div>
+      <h1>🚗 Smart Parking — Gestão em Tempo Real</h1>
+      <span class="subtitle">Ajudando na mobilidade urbana</span>
+    </div>
+    <div class="kpis">
+      <div class="kpi-card">
+        <span class="kpi-label">Vagas Livres</span>
+        <strong class="kpi-value livre">
+          {{ parkingService.totalLivres() }} / {{ parkingService.vagas().length }}
+        </strong>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Ocupação</span>
+        <strong class="kpi-value">{{ parkingService.taxaOcupacao() }}%</strong>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-grid">
+    <section class="map-section">
+      <div id="mapa-vagas"></div>
+    </section>
+
+    <aside class="vagas-sidebar">
+      <h2>Status dos Sensores</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="margin: 0;">Status dos Sensores</h2>
+        <button type="button" class="btn-simular" style="width: auto; background: #2563eb; padding: 6px 12px;"
+          (click)="exibindoFormulario = !exibindoFormulario">
+          {{ exibindoFormulario ? '✖ Fechar' : '+ Nova Vaga' }}
+        </button>
+      </div>
+
+      @if (exibindoFormulario) {
+      <app-vaga-form (fechar)="exibindoFormulario = false" />
+      }
+
+      <div class="vagas-list">
+        @for (vaga of parkingService.vagas(); track vaga.codigo) {
+        <div class="vaga-card" [ngClass]="vaga.status.toLowerCase()">
+          <div (click)="focarVagaNoMapa(vaga)">
+            <div class="vaga-header">
+              <span class="codigo">{{ vaga.codigo }}</span>
+              <span class="badge">{{ vaga.status }}</span>
+            </div>
+            <div class="vaga-info">
+              <span>Tipo: <strong>{{ vaga.tipo }}</strong></span>
+              <span>Tarifa: <strong>R$ {{ vaga.preco_hora.toFixed(2) }}/h</strong></span>
+            </div>
+          </div>
+
+          <button type="button" class="btn-simular" (click)="simularSensor(vaga)">
+            Simular Sensor (Alternar)
+          </button>
+        </div>
+        }
+      </div>
+    </aside>
+  </main>
+</div>

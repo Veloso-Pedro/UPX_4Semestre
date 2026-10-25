@@ -1,0 +1,8 @@
+@import 'leaflet/dist/leaflet.css';
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #0f172a;
+  color: #f8fafc;
+}
