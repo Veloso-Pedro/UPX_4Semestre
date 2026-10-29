@@ -15,46 +15,71 @@
         <span class="kpi-label">Ocupação</span>
         <strong class="kpi-value">{{ parkingService.taxaOcupacao() }}%</strong>
       </div>
+      <button class="btn-toggle-modo" (click)="modoAdmin = !modoAdmin" [class.admin-ativo]="modoAdmin">
+        {{ modoAdmin ? '⚙️ Modo Admin' : '👤 Modo Motorista' }}
+      </button>
     </div>
   </header>
 
   <main class="main-grid">
     <section class="map-section">
+      @if (modoAdmin && exibindoFormulario) {
+        <div class="map-hint">Clique no mapa para definir a localização da nova vaga!</div>
+      }
       <div id="mapa-vagas"></div>
     </section>
 
     <aside class="vagas-sidebar">
-      <h2>Status dos Sensores</h2>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <h2 style="margin: 0;">Status dos Sensores</h2>
-        <button type="button" class="btn-simular" style="width: auto; background: #2563eb; padding: 6px 12px;"
-          (click)="exibindoFormulario = !exibindoFormulario">
-          {{ exibindoFormulario ? '✖ Fechar' : '+ Nova Vaga' }}
-        </button>
+      <div class="sidebar-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="margin: 0;">{{ modoAdmin ? 'Gestão de Sensores' : 'Vagas Disponíveis' }}</h2>
+        @if (modoAdmin) {
+          <button type="button" class="btn-nova-vaga" style="width: auto; background: #2563eb; padding: 6px 12px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;"
+            (click)="exibindoFormulario = !exibindoFormulario">
+            {{ exibindoFormulario ? '✖ Fechar' : '+ Nova Vaga' }}
+          </button>
+        }
       </div>
 
-      @if (exibindoFormulario) {
-      <app-vaga-form (fechar)="exibindoFormulario = false" />
+      @if (modoAdmin && exibindoFormulario) {
+        <app-vaga-form (fechar)="exibindoFormulario = false" />
       }
 
       <div class="vagas-list">
         @for (vaga of parkingService.vagas(); track vaga.codigo) {
-        <div class="vaga-card" [ngClass]="vaga.status.toLowerCase()">
-          <div (click)="focarVagaNoMapa(vaga)">
-            <div class="vaga-header">
-              <span class="codigo">{{ vaga.codigo }}</span>
-              <span class="badge">{{ vaga.status }}</span>
+          <div class="vaga-card" [ngClass]="vaga.status.toLowerCase()">
+            <div (click)="focarVagaNoMapa(vaga)" style="cursor: pointer;">
+              <div class="vaga-header">
+                <span class="codigo">{{ vaga.codigo }}</span>
+                <div class="header-actions" style="display: flex; align-items: center; gap: 6px;">
+                  <span class="badge">{{ vaga.status }}</span>
+                  @if (modoAdmin) {
+                    <button type="button" class="btn-excluir" title="Excluir vaga" (click)="excluirVaga(vaga.codigo); $event.stopPropagation()">
+                      🗑️
+                    </button>
+                  }
+                </div>
+              </div>
+              <div class="vaga-info">
+                <span>Tipo: <strong>{{ vaga.tipo }}</strong></span>
+                <span>Tarifa: <strong>R$ {{ vaga.preco_hora.toFixed(2) }}/h</strong></span>
+              </div>
             </div>
-            <div class="vaga-info">
-              <span>Tipo: <strong>{{ vaga.tipo }}</strong></span>
-              <span>Tarifa: <strong>R$ {{ vaga.preco_hora.toFixed(2) }}/h</strong></span>
-            </div>
+            @if (modoAdmin) {
+              <button type="button" class="btn-simular" (click)="simularSensor(vaga)">
+                📡 Simular Sensor (Alternar)
+              </button>
+            } @else {
+              @if (vaga.status === 'LIVRE') {
+                <button type="button" class="btn-reservar" (click)="reservarVaga(vaga)">
+                  🔒 Reservar Vaga
+                </button>
+              } @else {
+                <button type="button" class="btn-indisponivel" disabled>
+                  ⛔ Vaga Indisponível
+                </button>
+              }
+            }
           </div>
-
-          <button type="button" class="btn-simular" (click)="simularSensor(vaga)">
-            Simular Sensor (Alternar)
-          </button>
-        </div>
         }
       </div>
     </aside>

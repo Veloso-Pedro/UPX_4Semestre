@@ -17,6 +17,7 @@ export class App implements AfterViewInit {
   private markersLayer = L.layerGroup();
   private markersByCodigo: { [codigo: string]: L.CircleMarker } = {};
   public exibindoFormulario = false;
+  public modoAdmin = false;
 
   constructor() {
     effect(() => {
@@ -35,7 +36,6 @@ export class App implements AfterViewInit {
     const cantoSudoeste = L.latLng(-23.6000, -47.5600);
     const cantoNordeste = L.latLng(-23.3800, -47.3400);
     const limitesSorocaba = L.latLngBounds(cantoSudoeste, cantoNordeste);
-    
 
     this.map = L.map('mapa-vagas', {
       center: [-23.5015, -47.4581],
@@ -58,8 +58,7 @@ export class App implements AfterViewInit {
       if (this.exibindoFormulario) {
         this.parkingService.selecionarPontoNoMapa(evento.latlng.lat, evento.latlng.lng);
       }
-    })
-
+    });
   }
 
   private desenharPinosNoMapa(vagas: Vaga[]): void {
@@ -96,5 +95,22 @@ export class App implements AfterViewInit {
     if (!this.map || isNaN(vaga.lat) || isNaN(vaga.lng)) return;
     this.map.setView([vaga.lat, vaga.lng], 19);
     this.markersByCodigo[vaga.codigo]?.openPopup();
+  }
+
+  async reservarVaga(vaga: Vaga): Promise<void> {
+    if (vaga.status !== 'LIVRE') return;
+    
+    await this.parkingService.reservarVaga(vaga.codigo);
+    
+    if (this.map) {
+      this.desenharPinosNoMapa(this.parkingService.vagas());
+    }
+  }
+
+  async excluirVaga(codigo: string): Promise<void> {
+    await this.parkingService.removerVaga(codigo);
+    if (this.map) {
+      this.desenharPinosNoMapa(this.parkingService.vagas());
+    }
   }
 }

@@ -119,4 +119,18 @@ export class ParkingService {
       await this.supabase.from('vagas').delete().eq('codigo', codigo);
     }
   }
+
+
+  async reservarVaga(codigo: string): Promise<void> {
+    this.vagas.update(lista =>
+      lista.map(v => v.codigo === codigo ? { ...v, status: 'RESERVADA' } : v)
+    );
+
+    if (this.supabase) {
+      await this.supabase
+        .from('vagas')
+        .update({ status: 'RESERVADA', ultima_atualizacao: new Date().toISOString() })
+        .eq('codigo', codigo);
+    }
+  }
 }
