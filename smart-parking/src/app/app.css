@@ -15,27 +15,44 @@
   padding: 16px 24px;
   border-radius: 12px;
   border: 1px solid #334155;
+}
 
-  h1 { margin: 0; font-size: 1.4rem; }
-  .subtitle { color: #94a3b8; font-size: 0.85rem; }
+.topbar h1 { 
+  margin: 0; 
+  font-size: 1.4rem; 
+}
+
+.topbar .subtitle { 
+  color: #94a3b8; 
+  font-size: 0.85rem; 
 }
 
 .kpis {
   display: flex;
   gap: 16px;
+}
 
-  .kpi-card {
-    background: #0f172a;
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: 1px solid #334155;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.kpi-card {
+  background: #0f172a;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    .kpi-label { font-size: 0.75rem; color: #94a3b8; }
-    .kpi-value { font-size: 1.3rem; &.livre { color: #22c55e; } }
-  }
+.kpi-card .kpi-label { 
+  font-size: 0.75rem; 
+  color: #94a3b8; 
+}
+
+.kpi-card .kpi-value { 
+  font-size: 1.3rem; 
+}
+
+.kpi-card .kpi-value.livre { 
+  color: #22c55e; 
 }
 
 .main-grid {
@@ -51,11 +68,28 @@
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #334155;
+  position: relative;
+}
 
-  #mapa-vagas {
-    width: 100%;
-    height: 100%;
-  }
+#mapa-vagas {
+  width: 100%;
+  height: 100%;
+}
+
+.map-hint {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: #2563eb;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
 }
 
 .vagas-sidebar {
@@ -66,8 +100,11 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
 
-  h2 { margin: 0 0 12px 0; font-size: 1.1rem; }
+.vagas-sidebar h2 { 
+  margin: 0 0 12px 0; 
+  font-size: 1.1rem; 
 }
 
 .vagas-list {
@@ -81,13 +118,38 @@
   border-radius: 10px;
   padding: 14px;
   border-left: 6px solid #64748b;
-  cursor: pointer;
   transition: transform 0.15s ease;
+}
 
-  &:hover { transform: translateY(-2px); }
-  &.livre { border-left-color: #22c55e; .badge { background: rgba(34, 197, 94, 0.2); color: #4ade80; } }
-  &.ocupada { border-left-color: #ef4444; .badge { background: rgba(239, 68, 68, 0.2); color: #f87171; } }
-  &.reservada { border-left-color: #eab308; .badge { background: rgba(234, 179, 8, 0.2); color: #facc15; } }
+.vaga-card:hover { 
+  transform: translateY(-2px); 
+}
+
+.vaga-card.livre { 
+  border-left-color: #22c55e; 
+}
+
+.vaga-card.livre .badge { 
+  background: rgba(34, 197, 94, 0.2); 
+  color: #4ade80; 
+}
+
+.vaga-card.ocupada { 
+  border-left-color: #ef4444; 
+}
+
+.vaga-card.ocupada .badge { 
+  background: rgba(239, 68, 68, 0.2); 
+  color: #f87171; 
+}
+
+.vaga-card.reservada { 
+  border-left-color: #eab308; 
+}
+
+.vaga-card.reservada .badge { 
+  background: rgba(234, 179, 8, 0.2); 
+  color: #facc15; 
 }
 
 .vaga-header {
@@ -95,9 +157,18 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+}
 
-  .codigo { font-size: 1.2rem; font-weight: 700; }
-  .badge { padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.vaga-header .codigo { 
+  font-size: 1.2rem; 
+  font-weight: 700; 
+}
+
+.vaga-header .badge { 
+  padding: 4px 10px; 
+  border-radius: 999px; 
+  font-size: 0.75rem; 
+  font-weight: 600; 
 }
 
 .vaga-info {
@@ -117,6 +188,161 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
+}
 
-  &:hover { background: #475569; }
+.btn-simular:hover { 
+  background: #475569; 
+}
+
+.btn-toggle-modo {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 12px;
+}
+
+.btn-reservar {
+  width: 100%;
+  padding: 10px;
+  background: #f59e0b;
+  color: #451a03;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.2s;
+}
+
+.btn-reservar:hover { 
+  background: #d97706; 
+}
+
+.btn-indisponivel {
+  width: 100%;
+  padding: 10px;
+  background: #334155;
+  color: #94a3b8;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: not-allowed;
+  margin-top: 12px;
+  opacity: 0.7;
+}
+
+.reserva-card {
+  background: #0f172a;
+  border: 1px solid #3b82f6;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reserva-card h3 {
+  margin: 0;
+  color: #60a5fa;
+  font-size: 1.1rem;
+}
+
+.reserva-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 10px;
+}
+
+.reserva-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e293b;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.reserva-total strong {
+  color: #22c55e;
+  font-size: 1.2rem;
+}
+
+.avisos-regras {
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid #eab308;
+  color: #facc15;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.avisos-regras p {
+  margin: 0;
+}
+
+.reserva-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-cancelar {
+  flex: 1;
+  background: #334155;
+  color: #f8fafc;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-confirmar {
+  flex: 2;
+  background: #22c55e;
+  color: #052e16;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.input-group input {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.input-group input:focus {
+  border-color: #3b82f6;
 }

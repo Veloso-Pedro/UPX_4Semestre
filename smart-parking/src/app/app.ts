@@ -1,35 +1,67 @@
-import { Component, AfterViewInit, inject, effect } from '@angular/core';
+import { Component, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ParkingService, Vaga } from './services/parking';
+import { AuthService } from './services/auth';
 import { VagaForm } from './components/vaga-form/vaga-form';
+import { Login } from './components/login/login';
+import { Cadastro } from './components/cadastro/cadastro';
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, VagaForm],
+  imports: [CommonModule, FormsModule, VagaForm, Login, Cadastro],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App implements AfterViewInit {
+export class App {
   public parkingService = inject(ParkingService);
-  private map!: L.Map;
+  public authService = inject(AuthService);
+  
+  private map: L.Map | null = null;
   private markersLayer = L.layerGroup();
   private markersByCodigo: { [codigo: string]: L.CircleMarker } = {};
+  
   public exibindoFormulario = false;
-  public modoAdmin = false;
+  public telaAuth: 'LOGIN' | 'CADASTRO' = 'LOGIN';
+
+  public vagaSelecionada: Vaga | null = null;
+  public horasReserva: number = 1;
+  public reservaConcluida: boolean = false;
+
+  public minhaReserva: Vaga | null = null;
+  public codigoCheckin: string = '';
+  public erroCheckin: boolean = false;
+  public checkinConcluido: boolean = false;
+
+  get modoAdmin(): boolean {
+    return this.authService.usuarioAtual()?.tipo === 'ADMIN';
+  }
 
   constructor() {
+    effect(() => {
+      const usuario = this.authService.usuarioAtual();
+      if (usuario) {
+        setTimeout(() => {
+          if (!this.map) {
+            this.iniciarMapa();
+          }
+        }, 100);
+      } else {
+        if (this.map) {
+          this.map.remove();
+          this.map = null;
+        }
+      }
+    });
+
     effect(() => {
       const vagasAtuais = this.parkingService.vagas();
       if (this.map) {
         this.desenharPinosNoMapa(vagasAtuais);
       }
     });
-  }
-
-  ngAfterViewInit(): void {
-    this.iniciarMapa();
   }
 
   private iniciarMapa(): void {
@@ -62,6 +94,7 @@ export class App implements AfterViewInit {
   }
 
   private desenharPinosNoMapa(vagas: Vaga[]): void {
+    if (!this.map) return;
     this.markersLayer.clearLayers();
     this.markersByCodigo = {};
 
@@ -97,10 +130,58 @@ export class App implements AfterViewInit {
     this.markersByCodigo[vaga.codigo]?.openPopup();
   }
 
-  async reservarVaga(vaga: Vaga): Promise<void> {
-    if (vaga.status !== 'LIVRE') return;
+  abrirReserva(vaga: Vaga): void {
+    this.vagaSelecionada = vaga;
+    this.horasReserva = 1;
+    this.reservaConcluida = false;
+  }
+
+  cancelarReserva(): void {
+    this.vagaSelecionada = null;
+    this.reservaConcluida = false;
+  }
+
+  async confirmarReserva(): Promise<void> {
+    if (!this.vagaSelecionada) return;
+    if (this.horasReserva < 1) this.horasReserva = 1;
+
+    await this.parkingService.reservarVaga(this.vagaSelecionada.codigo);
     
-    await this.parkingService.reservarVaga(vaga.codigo);
+    if (this.map) {
+      this.desenharPinosNoMapa(this.parkingService.vagas());
+    }
+
+    this.reservaConcluida = true;
+  }
+
+  fecharComprovante(): void {
+    this.minhaReserva = this.vagaSelecionada;
+    this.vagaSelecionada = null;
+    this.reservaConcluida = false;
+  }
+
+  async validarCheckin(): Promise<void> {
+    if (!this.minhaReserva) return;
+    
+    if (this.codigoCheckin.trim().toUpperCase() === this.minhaReserva.codigo) {
+      this.erroCheckin = false;
+      await this.parkingService.realizarCheckin(this.minhaReserva.codigo);
+      this.checkinConcluido = true;
+      if (this.map) {
+        this.desenharPinosNoMapa(this.parkingService.vagas());
+      }
+    } else {
+      this.erroCheckin = true;
+    }
+  }
+
+  async fazerCheckout(): Promise<void> {
+    if (!this.minhaReserva) return;
+    
+    await this.parkingService.liberarVaga(this.minhaReserva.codigo);
+    this.minhaReserva = null;
+    this.checkinConcluido = false;
+    this.codigoCheckin = '';
     
     if (this.map) {
       this.desenharPinosNoMapa(this.parkingService.vagas());

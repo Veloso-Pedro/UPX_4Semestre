@@ -1,0 +1,28 @@
+<div class="auth-wrapper">
+  <form class="auth-card" (ngSubmit)="entrar()">
+    <div class="auth-header">
+      <h2>🚗 Smart Parking</h2>
+      <p>Gestão de Mobilidade Urbana</p>
+    </div>
+    
+    @if (erro) { <div class="erro-box">E-mail ou senha incorretos!</div> }
+
+    <div class="input-group">
+      <label>E-mail</label>
+      <input type="email" [(ngModel)]="email" name="email" placeholder="Digite seu e-mail" required />
+    </div>
+
+    <div class="input-group">
+      <label>Senha</label>
+      <input type="password" [(ngModel)]="senha" name="senha" placeholder="Digite sua senha" required />
+    </div>
+    
+    <button type="submit" class="btn-login" [disabled]="carregando">
+      {{ carregando ? 'Entrando...' : 'Entrar no Sistema' }}
+    </button>
+    
+    <button type="button" class="btn-link" (click)="irParaCadastro.emit()">
+      Não tem conta? <strong>Cadastre-se aqui</strong>
+    </button>
+  </form>
+</div>

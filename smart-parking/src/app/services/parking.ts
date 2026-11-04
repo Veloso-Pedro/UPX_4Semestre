@@ -133,4 +133,23 @@ export class ParkingService {
         .eq('codigo', codigo);
     }
   }
+
+  // Check-in
+  async realizarCheckin(codigo: string): Promise<void> {
+    this.vagas.update(lista =>
+      lista.map(v => v.codigo === codigo ? { ...v, status: 'OCUPADA' } : v)
+    );
+    if (this.supabase) {
+      await this.supabase.from('vagas').update({ status: 'OCUPADA' }).eq('codigo', codigo);
+    }
+  }
+
+  async liberarVaga(codigo: string): Promise<void> {
+    this.vagas.update(lista =>
+      lista.map(v => v.codigo === codigo ? { ...v, status: 'LIVRE' } : v)
+    );
+    if (this.supabase) {
+      await this.supabase.from('vagas').update({ status: 'LIVRE' }).eq('codigo', codigo);
+    }
+  }
 }

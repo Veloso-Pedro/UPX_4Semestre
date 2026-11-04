@@ -1,0 +1,41 @@
+<div class="auth-wrapper">
+  <form class="auth-card" (ngSubmit)="registrar()">
+    <div class="auth-header">
+      <h2>Criar Conta</h2>
+      <p>Junte-se ao Smart Parking</p>
+    </div>
+
+    @if (erro) { <div class="erro-box">Erro ao cadastrar. Verifique os dados.</div> }
+
+    <div class="input-group">
+      <label>Nome Completo</label>
+      <input type="text" [(ngModel)]="nome" name="nome" placeholder="Digite seu nome" required />
+    </div>
+
+    <div class="input-group">
+      <label>E-mail</label>
+      <input type="email" [(ngModel)]="email" name="email" placeholder="Digite seu e-mail" required />
+    </div>
+
+    <div class="input-group">
+      <label>Senha</label>
+      <input type="password" [(ngModel)]="senha" name="senha" placeholder="Crie uma senha" required />
+    </div>
+    
+    <div class="input-group">
+      <label>Tipo de Conta</label>
+      <select [(ngModel)]="tipo" name="tipo" required>
+        <option value="MOTORISTA">Motorista (Reserva de Vagas)</option>
+        <option value="ADMIN">Proprietário (Gestão do Estacionamento)</option>
+      </select>
+    </div>
+    
+    <button type="submit" class="btn-login" [disabled]="carregando">
+      {{ carregando ? 'Cadastrando...' : 'Criar Conta' }}
+    </button>
+    
+    <button type="button" class="btn-link" (click)="irParaLogin.emit()">
+      Já tem conta? <strong>Faça Login</strong>
+    </button>
+  </form>
+</div>
