@@ -346,3 +346,25 @@
 .input-group input:focus {
   border-color: #3b82f6;
 }
+
+.btn-toggle-bi {
+  background: #2563eb;
+  color: #ffffff;
+  border: 1px solid #1d4ed8;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 12px;
+}
+
+.btn-toggle-bi:hover {
+  background: #1d4ed8;
+}
+
+.btn-toggle-bi.ativo {
+  background: #1e293b;
+  border-color: #64748b;
+  color: #f8fafc;
+}

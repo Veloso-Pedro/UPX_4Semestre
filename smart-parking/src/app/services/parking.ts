@@ -1,6 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
+import { AuthService } from './auth';
 
 export interface Vaga {
   id: string;
@@ -10,11 +11,13 @@ export interface Vaga {
   preco_hora: number;
   lat: number;
   lng: number;
+  gestor_id?: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class ParkingService {
   private supabase: SupabaseClient | null = null;
+  private authService = inject(AuthService);
 
   public vagas = signal<Vaga[]>([
     { id: '1', codigo: 'A-01', status: 'LIVRE', tipo: 'COMUM', preco_hora: 6.00, lat: -23.5015, lng: -47.4581 },
@@ -34,15 +37,22 @@ export class ParkingService {
   constructor() {
     if (environment.supabaseUrl && environment.supabaseKey) {
       this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-      this.carregarDoBanco();
     }
   }
 
   async carregarDoBanco() {
-    if (!this.supabase) return;
-    const { data, error } = await this.supabase.from('vagas').select('*').order('codigo');
+    const usuario = this.authService.usuarioAtual();
+    if (!this.supabase || !usuario) return;
 
-    if (!error && data && data.length > 0) {
+    let query = this.supabase.from('vagas').select('*').order('codigo');
+
+    if (usuario.tipo === 'ADMIN') {
+      query = query.eq('gestor_id', usuario.id);
+    }
+
+    const { data, error } = await query;
+
+    if (!error && data) {
       const vagasFormatadas: Vaga[] = data.map((item: any, index: number) => ({
         id: String(item.id),
         codigo: item.codigo,
@@ -50,7 +60,8 @@ export class ParkingService {
         tipo: item.tipo,
         preco_hora: Number(item.preco_hora ?? 6),
         lat: Number(item.lat ?? (-23.5015 - index * 0.0002)),
-        lng: Number(item.lng ?? (-47.4581 - index * 0.0002))
+        lng: Number(item.lng ?? (-47.4581 - index * 0.0002)),
+        gestor_id: item.gestor_id
       }));
       this.vagas.set(vagasFormatadas);
     }
@@ -74,7 +85,6 @@ export class ParkingService {
     }
   }
 
-  // Centro de Sorocaba
   public coordenadaSelecionada = signal<{ lat: number; lng: number }>({
     lat: -23.5015,
     lng: -47.4581
@@ -88,7 +98,10 @@ export class ParkingService {
   }
 
   async adicionarVaga(nova: Omit<Vaga, 'id'>): Promise<void> {
-    const vagaTemp: Vaga = { ...nova, id: crypto.randomUUID() };
+    const usuario = this.authService.usuarioAtual();
+    if (!usuario) return;
+
+    const vagaTemp: Vaga = { ...nova, id: crypto.randomUUID(), gestor_id: usuario.id };
     this.vagas.update(lista => [...lista, vagaTemp].sort((a, b) => a.codigo.localeCompare(b.codigo)));
 
     if (this.supabase) {
@@ -100,7 +113,8 @@ export class ParkingService {
           tipo: nova.tipo,
           preco_hora: nova.preco_hora,
           lat: nova.lat,
-          lng: nova.lng
+          lng: nova.lng,
+          gestor_id: usuario.id
         }])
         .select()
         .single();
@@ -120,7 +134,6 @@ export class ParkingService {
     }
   }
 
-
   async reservarVaga(codigo: string): Promise<void> {
     this.vagas.update(lista =>
       lista.map(v => v.codigo === codigo ? { ...v, status: 'RESERVADA' } : v)
@@ -134,7 +147,6 @@ export class ParkingService {
     }
   }
 
-  // Check-in
   async realizarCheckin(codigo: string): Promise<void> {
     this.vagas.update(lista =>
       lista.map(v => v.codigo === codigo ? { ...v, status: 'OCUPADA' } : v)

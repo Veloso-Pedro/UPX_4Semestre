@@ -7,22 +7,23 @@ import { VagaForm } from './components/vaga-form/vaga-form';
 import { Login } from './components/login/login';
 import { Cadastro } from './components/cadastro/cadastro';
 import * as L from 'leaflet';
+import { DashboardBi } from './components/dashboard-bi/dashboard-bi';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, VagaForm, Login, Cadastro],
+  imports: [CommonModule, FormsModule, VagaForm, Login, Cadastro, DashboardBi],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
   public parkingService = inject(ParkingService);
   public authService = inject(AuthService);
-  
+
   private map: L.Map | null = null;
   private markersLayer = L.layerGroup();
   private markersByCodigo: { [codigo: string]: L.CircleMarker } = {};
-  
+
   public exibindoFormulario = false;
   public telaAuth: 'LOGIN' | 'CADASTRO' = 'LOGIN';
 
@@ -35,6 +36,8 @@ export class App {
   public erroCheckin: boolean = false;
   public checkinConcluido: boolean = false;
 
+  public exibindoBI = false;
+
   get modoAdmin(): boolean {
     return this.authService.usuarioAtual()?.tipo === 'ADMIN';
   }
@@ -43,12 +46,14 @@ export class App {
     effect(() => {
       const usuario = this.authService.usuarioAtual();
       if (usuario) {
+        this.parkingService.carregarDoBanco();
         setTimeout(() => {
           if (!this.map) {
             this.iniciarMapa();
           }
         }, 100);
       } else {
+        this.parkingService.vagas.set([]);
         if (this.map) {
           this.map.remove();
           this.map = null;
@@ -62,6 +67,20 @@ export class App {
         this.desenharPinosNoMapa(vagasAtuais);
       }
     });
+  }
+
+  alternarBI(): void {
+    this.exibindoBI = !this.exibindoBI;
+    if (!this.exibindoBI) {
+      setTimeout(() => {
+        if (!this.map) this.iniciarMapa();
+      }, 100);
+    } else {
+      if (this.map) {
+        this.map.remove();
+        this.map = null;
+      }
+    }
   }
 
   private iniciarMapa(): void {
@@ -146,7 +165,7 @@ export class App {
     if (this.horasReserva < 1) this.horasReserva = 1;
 
     await this.parkingService.reservarVaga(this.vagaSelecionada.codigo);
-    
+
     if (this.map) {
       this.desenharPinosNoMapa(this.parkingService.vagas());
     }
@@ -162,7 +181,7 @@ export class App {
 
   async validarCheckin(): Promise<void> {
     if (!this.minhaReserva) return;
-    
+
     if (this.codigoCheckin.trim().toUpperCase() === this.minhaReserva.codigo) {
       this.erroCheckin = false;
       await this.parkingService.realizarCheckin(this.minhaReserva.codigo);
@@ -177,12 +196,12 @@ export class App {
 
   async fazerCheckout(): Promise<void> {
     if (!this.minhaReserva) return;
-    
+
     await this.parkingService.liberarVaga(this.minhaReserva.codigo);
     this.minhaReserva = null;
     this.checkinConcluido = false;
     this.codigoCheckin = '';
-    
+
     if (this.map) {
       this.desenharPinosNoMapa(this.parkingService.vagas());
     }

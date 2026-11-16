@@ -1,0 +1,69 @@
+.bi-container {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.bi-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #60a5fa;
+}
+
+.bi-header p {
+  margin: 8px 0 0 0;
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.bi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.bi-card {
+  background: #0f172a;
+  border-radius: 10px;
+  padding: 20px;
+  border: 1px solid #334155;
+  display: flex;
+  flex-direction: column;
+  border-left: 6px solid #64748b;
+}
+
+.bi-card.faturamento { border-left-color: #22c55e; }
+.bi-card.faturamento .bi-value { color: #22c55e; }
+
+.bi-card.reservas { border-left-color: #eab308; }
+.bi-card.reservas .bi-value { color: #facc15; }
+
+.bi-card.ocupadas { border-left-color: #ef4444; }
+.bi-card.ocupadas .bi-value { color: #f87171; }
+
+.bi-card.total { border-left-color: #3b82f6; }
+.bi-card.total .bi-value { color: #60a5fa; }
+
+.bi-label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.bi-value {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.bi-sub {
+  font-size: 0.8rem;
+  color: #64748b;
+}

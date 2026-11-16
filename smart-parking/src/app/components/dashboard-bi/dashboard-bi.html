@@ -1,0 +1,32 @@
+<div class="bi-container">
+  <div class="bi-header">
+    <h2>📊 Business Intelligence (Tempo Real)</h2>
+    <p>Monitoramento financeiro e de fluxo do seu estacionamento.</p>
+  </div>
+
+  <div class="bi-grid">
+    <div class="bi-card faturamento">
+      <span class="bi-label">Faturamento Atual (R$/hora)</span>
+      <strong class="bi-value">R$ {{ faturamentoAtual().toFixed(2) }}</strong>
+      <span class="bi-sub">Potencial máximo: R$ {{ potencialMaximo().toFixed(2) }}</span>
+    </div>
+
+    <div class="bi-card reservas">
+      <span class="bi-label">Vagas Reservadas (Aguardando Check-in)</span>
+      <strong class="bi-value">{{ totalReservas() }}</strong>
+      <span class="bi-sub">Garantia de receita futura</span>
+    </div>
+
+    <div class="bi-card ocupadas">
+      <span class="bi-label">Veículos Estacionados (Ocupadas)</span>
+      <strong class="bi-value">{{ totalOcupadas() }}</strong>
+      <span class="bi-sub">Ocupação física atual</span>
+    </div>
+
+    <div class="bi-card total">
+      <span class="bi-label">Movimentação Total</span>
+      <strong class="bi-value">{{ vagasEmUso() }} / {{ totalVagas() }}</strong>
+      <span class="bi-sub">Vagas com algum status de uso</span>
+    </div>
+  </div>
+</div>
