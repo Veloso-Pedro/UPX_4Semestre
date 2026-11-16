@@ -15,13 +15,21 @@ Este projeto foi construído com uma stack moderna e de alta performance:
 
 ---
 
+## 👥 Perfis de Acesso (Multi-tenant)
+O sistema possui arquitetura multi-tenant, isolando dados e funcionalidades baseados no perfil do usuário:
+- **Administrador (Gestor):** Acesso ao painel de BI, criação de vagas geolocalizadas, gerenciamento do próprio inventário de vagas e simulação de sensores.
+- **Motorista:** Visualização de vagas disponíveis na cidade, fluxo de reserva, cálculo automático de tarifas e validação de check-in/checkout.##
+
+---
+
 ## 🚀 Funcionalidades
 
-* **Mapa Interativo Restrito:** Visualização geolocalizada de Sorocaba com restrição de limites (Bounding Box) e tiles em modo escuro.
-* **Monitoramento em Tempo Real:** Atualização instantânea via Supabase Realtime (WebSockets) do status das vagas.
-* **Simulador de Sensores IoT:** Botões interativos em cada card para alternar o estado do sensor (`LIVRE` / `OCUPADA` / `RESERVADA`) com reflexo imediato no mapa e nos KPIs.
-* **Cadastro de Novas Vagas por Geolocalização:** Formulário modular (`VagaForm`) integrado ao clique no mapa para captação automática de Latitude e Longitude.
-* **Painel de KPIs:** Indicadores dinâmicos de vagas livres, total de vagas e taxa de ocupação urbana em tempo real.
+- **Mapa Interativo Restrito:** Visualização geolocalizada centrada em Sorocaba com restrição de limites territoriais (Bounding Box).
+- **Monitoramento em Tempo Real:** Atualização instantânea via Supabase Realtime para mudança de status das vagas.
+- **Dashboard de Business Intelligence (BI):** Painel exclusivo para gestores com cálculo de faturamento atual, potencial máximo de receita e KPIs de fluxo.
+- **Fluxo de Reserva Inteligente:** Motoristas podem reservar vagas por tempo determinado, com regras automatizadas de check-in (30 minutos de limite) e checkout (10 minutos de tolerância antes da cobrança adicional).
+- **Cadastro de Vagas por Geolocalização:** Formulário modular integrado ao clique no mapa para captação exata de Latitude e Longitude.
+- **Simulador de Sensores IoT:** Painel administrativo para alternar o estado do sensor físico (LIVRE / OCUPADA / RESERVADA), refletindo imediatamente na interface dos motoristas.
 
 ---
 
