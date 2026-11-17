@@ -46,6 +46,11 @@ export class App implements OnDestroy {
   public reservaConcluida: boolean = false;
   public erroReserva: string = '';
   public processando = false;
+  public aceitouTermo = false;
+  public erroTermo = false;
+
+  /** Opções do menu de horas: 1 a 48. */
+  readonly opcoesHoras = Array.from({ length: LIMITES.HORAS_MAX }, (_, i) => i + 1);
 
   // Reserva ativa do motorista
   public minhaReserva: Vaga | null = null;
@@ -257,6 +262,8 @@ export class App implements OnDestroy {
     this.vagaSelecionada = vaga;
     this.horasReserva = 1;
     this.erroReserva = '';
+    this.aceitouTermo = false;
+    this.erroTermo = false;
     this.reservaConcluida = false;
   }
 
@@ -289,6 +296,11 @@ export class App implements OnDestroy {
       return;
     }
     this.erroReserva = '';
+
+    if (!this.aceitouTermo) {
+      this.erroTermo = true;
+      return;
+    }
 
     // Mostra o comprovante na hora; a gravação no banco segue em segundo plano
     this.processando = true;

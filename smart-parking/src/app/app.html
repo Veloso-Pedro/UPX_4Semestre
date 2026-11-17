@@ -156,9 +156,14 @@
 
                 <div class="input-group" style="margin-top: 12px;">
                   <label>Tempo desejado (horas) <small class="contador">máx. {{ LIMITES.HORAS_MAX }}h</small></label>
-                  <input type="number" [(ngModel)]="horasReserva" (ngModelChange)="ajustarHoras($event)"
-                    [min]="LIMITES.HORAS_MIN" [max]="LIMITES.HORAS_MAX" step="1"
-                    [class.invalido]="erroReserva" />
+                  <select class="select-horas" [(ngModel)]="horasReserva" (ngModelChange)="ajustarHoras($event)"
+                    [class.invalido]="erroReserva">
+                    @for (h of opcoesHoras; track h) {
+                      <option [ngValue]="h">
+                        {{ h }} {{ h === 1 ? 'hora' : 'horas' }} — R$ {{ (h * vagaSelecionada.preco_hora).toFixed(2) }}
+                      </option>
+                    }
+                  </select>
                   @if (erroReserva) { <small class="erro-campo">{{ erroReserva }}</small> }
                 </div>
 
@@ -167,9 +172,19 @@
                   <strong>R$ {{ totalReserva.toFixed(2) }}</strong>
                 </div>
 
+                <label class="termo-ciencia" [class.invalido]="erroTermo">
+                  <input type="checkbox" [(ngModel)]="aceitouTermo" (ngModelChange)="erroTermo = false" />
+                  <span>
+                    Estou ciente de que o valor de <strong>R$ {{ totalReserva.toFixed(2) }}</strong> será
+                    descontado diretamente da minha conta e que, caso eu saia da vaga antes do tempo
+                    contratado, <strong>o valor não será reembolsado</strong>.
+                  </span>
+                </label>
+                @if (erroTermo) { <small class="erro-campo">Marque a caixa acima para confirmar a reserva.</small> }
+
                 <div class="reserva-actions">
                   <button type="button" class="btn-cancelar" (click)="cancelarReserva()">Cancelar</button>
-                  <button type="button" class="btn-confirmar" [disabled]="processando" (click)="confirmarReserva()">Confirmar Reserva</button>
+                  <button type="button" class="btn-confirmar" [disabled]="processando || !aceitouTermo" (click)="confirmarReserva()">Confirmar Reserva</button>
                 </div>
               }
             </div>
