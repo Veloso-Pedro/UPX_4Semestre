@@ -1,7 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
 import { AuthService } from './auth';
+import { supabase } from './supabase';
 
 export interface Vaga {
   id: string;
@@ -12,12 +11,22 @@ export interface Vaga {
   lat: number;
   lng: number;
   gestor_id?: string;
+  /** Data/hora prevista para a vaga voltar a ficar LIVRE (ISO). */
+  previsao_liberacao?: string | null;
 }
+
+// Colunas usadas pela tela. Buscar só o necessário em vez de `select('*')` reduz o tamanho da resposta.
+const COLUNAS_BASE = 'id, codigo, status, tipo, preco_hora, lat, lng, gestor_id';
+const COLUNAS_COM_PREVISAO = `${COLUNAS_BASE}, previsao_liberacao`;
 
 @Injectable({ providedIn: 'root' })
 export class ParkingService {
-  private supabase: SupabaseClient | null = null;
+  private supabase = supabase;
   private authService = inject(AuthService);
+
+  /** false se a coluna `previsao_liberacao` ainda não existir no banco. */
+  private bancoTemPrevisao = true;
+  private carregando: Promise<void> | null = null;
 
   public vagas = signal<Vaga[]>([
     { id: '1', codigo: 'A-01', status: 'LIVRE', tipo: 'COMUM', preco_hora: 6.00, lat: -23.5015, lng: -47.4581 },
@@ -30,30 +39,38 @@ export class ParkingService {
   public taxaOcupacao = computed(() => {
     const total = this.vagas().length;
     if (!total) return 0;
-    const ocupadas = this.vagas().filter(v => v.status !== 'LIVRE').length;
+    const ocupadas = total - this.totalLivres();
     return Math.round((ocupadas / total) * 100);
   });
 
-  constructor() {
-    if (environment.supabaseUrl && environment.supabaseKey) {
-      this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+  carregarDoBanco(): Promise<void> {
+    // Evita disparar várias requisições GET iguais ao mesmo tempo
+    if (!this.carregando) {
+      this.carregando = this.buscarVagas().finally(() => (this.carregando = null));
     }
+    return this.carregando;
   }
 
-  async carregarDoBanco() {
+  private async buscarVagas(): Promise<void> {
     const usuario = this.authService.usuarioAtual();
     if (!this.supabase || !usuario) return;
 
-    let query = this.supabase.from('vagas').select('*').order('codigo');
+    const montarQuery = (colunas: string) => {
+      let q = this.supabase!.from('vagas').select(colunas).order('codigo');
+      if (usuario.tipo === 'ADMIN') q = q.eq('gestor_id', usuario.id);
+      return q;
+    };
 
-    if (usuario.tipo === 'ADMIN') {
-      query = query.eq('gestor_id', usuario.id);
+    let { data, error } = await montarQuery(this.bancoTemPrevisao ? COLUNAS_COM_PREVISAO : COLUNAS_BASE);
+
+    // 42703 = coluna inexistente. Funciona mesmo antes de rodar o SQL que cria `previsao_liberacao`.
+    if (error?.code === '42703' && this.bancoTemPrevisao) {
+      this.bancoTemPrevisao = false;
+      ({ data, error } = await montarQuery(COLUNAS_BASE));
     }
 
-    const { data, error } = await query;
-
     if (!error && data) {
-      const vagasFormatadas: Vaga[] = data.map((item: any, index: number) => ({
+      const vagasFormatadas: Vaga[] = (data as any[]).map((item, index) => ({
         id: String(item.id),
         codigo: item.codigo,
         status: item.status,
@@ -61,28 +78,37 @@ export class ParkingService {
         preco_hora: Number(item.preco_hora ?? 6),
         lat: Number(item.lat ?? (-23.5015 - index * 0.0002)),
         lng: Number(item.lng ?? (-47.4581 - index * 0.0002)),
-        gestor_id: item.gestor_id
+        gestor_id: item.gestor_id,
+        previsao_liberacao: item.previsao_liberacao ?? null
       }));
       this.vagas.set(vagasFormatadas);
+    } else if (error) {
+      console.error('Erro ao carregar vagas:', error.message);
     }
+  }
+
+  /** Atualiza a vaga na tela na hora e grava no banco em seguida. */
+  private async atualizarVaga(codigo: string, campos: Partial<Vaga>): Promise<void> {
+    this.vagas.update(lista => lista.map(v => (v.codigo === codigo ? { ...v, ...campos } : v)));
+    if (!this.supabase) return;
+
+    const payload: Record<string, unknown> = { ...campos, ultima_atualizacao: new Date().toISOString() };
+    if (!this.bancoTemPrevisao) delete payload['previsao_liberacao'];
+
+    let { error } = await this.supabase.from('vagas').update(payload).eq('codigo', codigo);
+
+    if (error?.code === '42703' || error?.code === 'PGRST204') {
+      // Coluna nova ainda não criada no banco: grava só o status
+      this.bancoTemPrevisao = false;
+      delete payload['previsao_liberacao'];
+      ({ error } = await this.supabase.from('vagas').update(payload).eq('codigo', codigo));
+    }
+    if (error) console.error('Erro ao salvar no Supabase:', error.message);
   }
 
   alternarStatusSensor(vagaClicada: Vaga): void {
     const novoStatus: Vaga['status'] = vagaClicada.status === 'LIVRE' ? 'OCUPADA' : 'LIVRE';
-
-    this.vagas.update(listaAtual =>
-      listaAtual.map(v => v.codigo === vagaClicada.codigo ? { ...v, status: novoStatus } : v)
-    );
-
-    if (this.supabase) {
-      this.supabase
-        .from('vagas')
-        .update({ status: novoStatus, ultima_atualizacao: new Date().toISOString() })
-        .eq('codigo', vagaClicada.codigo)
-        .then(({ error }) => {
-          if (error) console.error('Erro ao salvar no Supabase:', error.message);
-        });
-    }
+    this.atualizarVaga(vagaClicada.codigo, { status: novoStatus, previsao_liberacao: null });
   }
 
   public coordenadaSelecionada = signal<{ lat: number; lng: number }>({
@@ -101,14 +127,15 @@ export class ParkingService {
     const usuario = this.authService.usuarioAtual();
     if (!usuario) return;
 
-    const vagaTemp: Vaga = { ...nova, id: crypto.randomUUID(), gestor_id: usuario.id };
+    const codigo = nova.codigo.toUpperCase();
+    const vagaTemp: Vaga = { ...nova, codigo, id: crypto.randomUUID(), gestor_id: usuario.id };
     this.vagas.update(lista => [...lista, vagaTemp].sort((a, b) => a.codigo.localeCompare(b.codigo)));
 
     if (this.supabase) {
       const { data, error } = await this.supabase
         .from('vagas')
         .insert([{
-          codigo: nova.codigo.toUpperCase(),
+          codigo,
           status: nova.status,
           tipo: nova.tipo,
           preco_hora: nova.preco_hora,
@@ -116,13 +143,14 @@ export class ParkingService {
           lng: nova.lng,
           gestor_id: usuario.id
         }])
-        .select()
+        .select('id')
         .single();
 
       if (!error && data) {
-        this.vagas.update(lista =>
-          lista.map(v => v.codigo === nova.codigo ? { ...v, id: String(data.id) } : v)
-        );
+        this.vagas.update(lista => lista.map(v => (v.codigo === codigo ? { ...v, id: String(data.id) } : v)));
+      } else if (error) {
+        console.error('Erro ao cadastrar vaga:', error.message);
+        this.vagas.update(lista => lista.filter(v => v.id !== vagaTemp.id));
       }
     }
   }
@@ -134,34 +162,17 @@ export class ParkingService {
     }
   }
 
-  async reservarVaga(codigo: string): Promise<void> {
-    this.vagas.update(lista =>
-      lista.map(v => v.codigo === codigo ? { ...v, status: 'RESERVADA' } : v)
-    );
-
-    if (this.supabase) {
-      await this.supabase
-        .from('vagas')
-        .update({ status: 'RESERVADA', ultima_atualizacao: new Date().toISOString() })
-        .eq('codigo', codigo);
-    }
+  /** Reserva: 30 min de prazo para check-in + horas pagas. */
+  reservarVaga(codigo: string, horas: number): Promise<void> {
+    const previsao = new Date(Date.now() + (30 + horas * 60) * 60000).toISOString();
+    return this.atualizarVaga(codigo, { status: 'RESERVADA', previsao_liberacao: previsao });
   }
 
-  async realizarCheckin(codigo: string): Promise<void> {
-    this.vagas.update(lista =>
-      lista.map(v => v.codigo === codigo ? { ...v, status: 'OCUPADA' } : v)
-    );
-    if (this.supabase) {
-      await this.supabase.from('vagas').update({ status: 'OCUPADA' }).eq('codigo', codigo);
-    }
+  realizarCheckin(codigo: string, fimUso: Date): Promise<void> {
+    return this.atualizarVaga(codigo, { status: 'OCUPADA', previsao_liberacao: fimUso.toISOString() });
   }
 
-  async liberarVaga(codigo: string): Promise<void> {
-    this.vagas.update(lista =>
-      lista.map(v => v.codigo === codigo ? { ...v, status: 'LIVRE' } : v)
-    );
-    if (this.supabase) {
-      await this.supabase.from('vagas').update({ status: 'LIVRE' }).eq('codigo', codigo);
-    }
+  liberarVaga(codigo: string): Promise<void> {
+    return this.atualizarVaga(codigo, { status: 'LIVRE', previsao_liberacao: null });
   }
 }

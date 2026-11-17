@@ -1,26 +1,32 @@
 <div class="auth-wrapper">
-  <form class="auth-card" (ngSubmit)="entrar()">
+  <form class="auth-card" (ngSubmit)="entrar()" novalidate>
     <div class="auth-header">
       <h2>🚗 Smart Parking</h2>
       <p>Gestão de Mobilidade Urbana</p>
     </div>
-    
+
     @if (erro) { <div class="erro-box">E-mail ou senha incorretos!</div> }
 
     <div class="input-group">
       <label>E-mail</label>
-      <input type="email" [(ngModel)]="email" name="email" placeholder="Digite seu e-mail" required />
+      <input type="email" [(ngModel)]="email" name="email" placeholder="Digite seu e-mail"
+        [maxlength]="LIMITES.EMAIL_MAX" autocomplete="email" required
+        [class.invalido]="tentouEnviar && erroEmail" />
+      @if (tentouEnviar && erroEmail) { <small class="erro-campo">{{ erroEmail }}</small> }
     </div>
 
     <div class="input-group">
       <label>Senha</label>
-      <input type="password" [(ngModel)]="senha" name="senha" placeholder="Digite sua senha" required />
+      <input type="password" [(ngModel)]="senha" name="senha" placeholder="Digite sua senha"
+        [maxlength]="LIMITES.SENHA_MAX" autocomplete="current-password" required
+        [class.invalido]="tentouEnviar && erroSenha" />
+      @if (tentouEnviar && erroSenha) { <small class="erro-campo">{{ erroSenha }}</small> }
     </div>
-    
+
     <button type="submit" class="btn-login" [disabled]="carregando">
       {{ carregando ? 'Entrando...' : 'Entrar no Sistema' }}
     </button>
-    
+
     <button type="button" class="btn-link" (click)="irParaCadastro.emit()">
       Não tem conta? <strong>Cadastre-se aqui</strong>
     </button>

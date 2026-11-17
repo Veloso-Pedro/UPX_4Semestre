@@ -77,11 +77,13 @@
 
                 <div class="input-group">
                   <label>Código da Vaga (ex: {{ minhaReserva.codigo }})</label>
-                  <input type="text" [(ngModel)]="codigoCheckin" placeholder="Digite o código" />
+                  <input type="text" [(ngModel)]="codigoCheckin" placeholder="Digite o código"
+                    [maxlength]="LIMITES.CODIGO_VAGA_MAX" style="text-transform: uppercase;"
+                    (keyup.enter)="validarCheckin()" />
                 </div>
 
                 <div class="avisos-regras" style="margin-top: 16px;">
-                  <p>⏳ Você tem <strong>30 minutos</strong> para realizar o check-in.</p>
+                  <p>⏳ Tempo restante para o check-in: <strong>{{ tempoRestanteCheckin }}</strong></p>
                 </div>
 
                 <button type="button" class="btn-confirmar" style="width: 100%; margin-top: 12px;" (click)="validarCheckin()">
@@ -92,16 +94,33 @@
 
                 <div class="reserva-info" style="margin-top: 12px;">
                   <span>Vaga: <strong>{{ minhaReserva.codigo }}</strong></span>
-                  <span>Tempo Pago: <strong>{{ horasReserva }}h</strong></span>
+                  <span>Tempo Pago: <strong>{{ horasReservadas }}h</strong></span>
                 </div>
 
-                <div class="reserva-total" style="margin-top: 12px; margin-bottom: 12px;">
-                  <span style="font-size: 0.85rem; color: #94a3b8;">Seu tempo de uso já está correndo.</span>
+                <div class="tempo-restante">
+                  <span>Tempo restante</span>
+                  <strong>{{ tempoRestanteUso }}</strong>
+                  <small>Término previsto: {{ fimUso | date:'dd/MM HH:mm' }}</small>
                 </div>
 
-                <button type="button" class="btn-cancelar" style="width: 100%; background: #ef4444; color: white;" (click)="fazerCheckout()">
-                  Finalizar e Liberar Vaga
-                </button>
+                @if (confirmandoCheckout) {
+                  <div class="alerta-checkout">
+                    <p><strong>⚠️ Atenção!</strong></p>
+                    <p>Ainda falta <strong>{{ tempoRestanteUso }}</strong> para acabar o tempo da sua vaga.</p>
+                    <p>Ao finalizar agora, o valor do tempo não utilizado
+                      (aprox. <strong>R$ {{ valorNaoReembolsado.toFixed(2) }}</strong>) <strong>não será reembolsado</strong>.</p>
+                    <div class="reserva-actions">
+                      <button type="button" class="btn-cancelar" (click)="confirmandoCheckout = false">Voltar</button>
+                      <button type="button" class="btn-cancelar" style="background: #ef4444; color: white;" (click)="fazerCheckout()">
+                        Finalizar mesmo assim
+                      </button>
+                    </div>
+                  </div>
+                } @else {
+                  <button type="button" class="btn-cancelar" style="width: 100%; background: #ef4444; color: white;" (click)="solicitarCheckout()">
+                    Finalizar e Liberar Vaga
+                  </button>
+                }
               }
             </div>
           } @else if (vagaSelecionada) {
@@ -111,12 +130,12 @@
 
                 <div class="reserva-info" style="margin-top: 8px;">
                   <span>Vaga: <strong>{{ vagaSelecionada.codigo }}</strong></span>
-                  <span>Tempo reservado: <strong>{{ horasReserva }}h</strong></span>
+                  <span>Tempo reservado: <strong>{{ horasReservadas }}h</strong></span>
                 </div>
 
                 <div class="reserva-total" style="margin-top: 12px; margin-bottom: 12px;">
                   <span>Total pago:</span>
-                  <strong>R$ {{ (horasReserva * vagaSelecionada.preco_hora).toFixed(2) }}</strong>
+                  <strong>R$ {{ (horasReservadas * vagaSelecionada.preco_hora).toFixed(2) }}</strong>
                 </div>
 
                 <div class="avisos-regras">
@@ -136,23 +155,52 @@
                 </div>
 
                 <div class="input-group" style="margin-top: 12px;">
-                  <label>Tempo desejado (horas)</label>
-                  <input type="number" [(ngModel)]="horasReserva" min="1" step="1" />
+                  <label>Tempo desejado (horas) <small class="contador">máx. {{ LIMITES.HORAS_MAX }}h</small></label>
+                  <input type="number" [(ngModel)]="horasReserva" (ngModelChange)="ajustarHoras($event)"
+                    [min]="LIMITES.HORAS_MIN" [max]="LIMITES.HORAS_MAX" step="1"
+                    [class.invalido]="erroReserva" />
+                  @if (erroReserva) { <small class="erro-campo">{{ erroReserva }}</small> }
                 </div>
 
                 <div class="reserva-total" style="margin-top: 12px;">
                   <span>Total a pagar:</span>
-                  <strong>R$ {{ (horasReserva * vagaSelecionada.preco_hora).toFixed(2) }}</strong>
+                  <strong>R$ {{ totalReserva.toFixed(2) }}</strong>
                 </div>
 
                 <div class="reserva-actions">
                   <button type="button" class="btn-cancelar" (click)="cancelarReserva()">Cancelar</button>
-                  <button type="button" class="btn-confirmar" (click)="confirmarReserva()">Confirmar Reserva</button>
+                  <button type="button" class="btn-confirmar" [disabled]="processando" (click)="confirmarReserva()">Confirmar Reserva</button>
                 </div>
               }
             </div>
           } @else {
-            @for (vaga of parkingService.vagas(); track vaga.codigo) {
+            <div class="filtros-vagas">
+              <input type="text" [(ngModel)]="filtroBusca" placeholder="🔍 Buscar por código"
+                [maxlength]="LIMITES.CODIGO_VAGA_MAX" />
+              <div class="filtros-linha">
+                <select [(ngModel)]="filtroStatus">
+                  <option value="">Todos status</option>
+                  <option value="LIVRE">Livre</option>
+                  <option value="RESERVADA">Reservada</option>
+                  <option value="OCUPADA">Ocupada</option>
+                </select>
+                <select [(ngModel)]="filtroTipo">
+                  <option value="">Todos tipos</option>
+                  <option value="COMUM">Comum</option>
+                  <option value="ELETRICO">Elétrico</option>
+                  <option value="PCD">PCD</option>
+                  <option value="IDOSO">Idoso</option>
+                </select>
+                <input type="number" [(ngModel)]="filtroPrecoMax" placeholder="Até R$/h" min="0" step="0.5" />
+              </div>
+              @if (filtrosAtivos) {
+                <button type="button" class="btn-limpar-filtros" (click)="limparFiltros()">
+                  Limpar filtros ({{ vagasFiltradas.length }} de {{ parkingService.vagas().length }})
+                </button>
+              }
+            </div>
+
+            @for (vaga of vagasFiltradas; track vaga.codigo) {
               <div class="vaga-card" [ngClass]="vaga.status.toLowerCase()">
                 <div (click)="focarVagaNoMapa(vaga)" style="cursor: pointer;">
                   <div class="vaga-header">
@@ -170,6 +218,9 @@
                     <span>Tipo: <strong>{{ vaga.tipo }}</strong></span>
                     <span>Tarifa: <strong>R$ {{ vaga.preco_hora.toFixed(2) }}/h</strong></span>
                   </div>
+                  @if (tempoParaLiberar(vaga); as liberar) {
+                    <div class="vaga-liberacao">⏱️ {{ liberar }}</div>
+                  }
                 </div>
                 @if (modoAdmin) {
                   <button type="button" class="btn-simular" (click)="simularSensor(vaga)">
@@ -187,6 +238,8 @@
                   }
                 }
               </div>
+            } @empty {
+              <p class="sem-vagas">Nenhuma vaga encontrada{{ filtrosAtivos ? ' com esses filtros' : '' }}.</p>
             }
           }
         </div>

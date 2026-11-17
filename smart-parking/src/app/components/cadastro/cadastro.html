@@ -1,27 +1,44 @@
 <div class="auth-wrapper">
-  <form class="auth-card" (ngSubmit)="registrar()">
+  <form class="auth-card" (ngSubmit)="registrar()" novalidate>
     <div class="auth-header">
       <h2>Criar Conta</h2>
       <p>Junte-se ao Smart Parking</p>
     </div>
 
-    @if (erro) { <div class="erro-box">Erro ao cadastrar. Verifique os dados.</div> }
+    @if (erro) { <div class="erro-box">{{ erro }}</div> }
 
     <div class="input-group">
-      <label>Nome Completo</label>
-      <input type="text" [(ngModel)]="nome" name="nome" placeholder="Digite seu nome" required />
+      <label>Nome Completo <small class="contador">{{ nome.length }}/{{ LIMITES.NOME_MAX }}</small></label>
+      <input type="text" [(ngModel)]="nome" name="nome" placeholder="Digite seu nome"
+        [maxlength]="LIMITES.NOME_MAX" autocomplete="name" required
+        [class.invalido]="tentouEnviar && erroNome" />
+      @if (tentouEnviar && erroNome) { <small class="erro-campo">{{ erroNome }}</small> }
     </div>
 
     <div class="input-group">
       <label>E-mail</label>
-      <input type="email" [(ngModel)]="email" name="email" placeholder="Digite seu e-mail" required />
+      <input type="email" [(ngModel)]="email" name="email" placeholder="Digite seu e-mail"
+        [maxlength]="LIMITES.EMAIL_MAX" autocomplete="email" required
+        [class.invalido]="tentouEnviar && erroEmail" />
+      @if (tentouEnviar && erroEmail) { <small class="erro-campo">{{ erroEmail }}</small> }
     </div>
 
     <div class="input-group">
-      <label>Senha</label>
-      <input type="password" [(ngModel)]="senha" name="senha" placeholder="Crie uma senha" required />
+      <label>Senha <small class="contador">{{ LIMITES.SENHA_MIN }} a {{ LIMITES.SENHA_MAX }} caracteres</small></label>
+      <input type="password" [(ngModel)]="senha" name="senha" placeholder="Crie uma senha"
+        [maxlength]="LIMITES.SENHA_MAX" autocomplete="new-password" required
+        [class.invalido]="tentouEnviar && erroSenha" />
+      @if (tentouEnviar && erroSenha) { <small class="erro-campo">{{ erroSenha }}</small> }
     </div>
-    
+
+    <div class="input-group">
+      <label>Confirmar Senha</label>
+      <input type="password" [(ngModel)]="confirmarSenha" name="confirmarSenha" placeholder="Repita a senha"
+        [maxlength]="LIMITES.SENHA_MAX" autocomplete="new-password" required
+        [class.invalido]="tentouEnviar && erroConfirmacao" />
+      @if (tentouEnviar && erroConfirmacao) { <small class="erro-campo">{{ erroConfirmacao }}</small> }
+    </div>
+
     <div class="input-group">
       <label>Tipo de Conta</label>
       <select [(ngModel)]="tipo" name="tipo" required>
@@ -29,11 +46,11 @@
         <option value="ADMIN">Proprietário (Gestão do Estacionamento)</option>
       </select>
     </div>
-    
+
     <button type="submit" class="btn-login" [disabled]="carregando">
       {{ carregando ? 'Cadastrando...' : 'Criar Conta' }}
     </button>
-    
+
     <button type="button" class="btn-link" (click)="irParaLogin.emit()">
       Já tem conta? <strong>Faça Login</strong>
     </button>

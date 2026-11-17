@@ -6,3 +6,24 @@ body {
   background-color: #0f172a;
   color: #f8fafc;
 }
+
+/* ---------- Validação de formulários ---------- */
+input.invalido,
+select.invalido {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+}
+
+.erro-campo {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: #f87171;
+}
+
+.contador {
+  float: right;
+  font-weight: normal;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}

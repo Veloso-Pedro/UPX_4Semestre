@@ -413,3 +413,97 @@
     border: 1px solid #334155 !important;
   }
 }
+/* ---------- Filtros de vagas ---------- */
+.filtros-vagas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filtros-vagas input,
+.filtros-vagas select {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  outline: none;
+  min-width: 0;
+}
+
+.filtros-vagas input:focus,
+.filtros-vagas select:focus {
+  border-color: #3b82f6;
+}
+
+.filtros-linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 6px;
+}
+
+.btn-limpar-filtros {
+  background: transparent;
+  border: none;
+  color: #60a5fa;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.sem-vagas {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.vaga-liberacao {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #facc15;
+}
+
+/* ---------- Tempo restante / alerta de checkout ---------- */
+.tempo-restante {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #1e293b;
+}
+
+.tempo-restante span,
+.tempo-restante small {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.tempo-restante strong {
+  font-size: 1.6rem;
+  color: #22c55e;
+}
+
+.alerta-checkout {
+  border: 1px solid #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.85rem;
+  color: #fde68a;
+}
+
+.alerta-checkout p {
+  margin: 0 0 8px 0;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

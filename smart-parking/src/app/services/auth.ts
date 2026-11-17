@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { supabase } from './supabase';
 
 export interface Usuario {
   id: string;
@@ -11,14 +10,8 @@ export interface Usuario {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private supabase: SupabaseClient | null = null;
+  private supabase = supabase;
   public usuarioAtual = signal<Usuario | null>(null);
-
-  constructor() {
-    if (environment.supabaseUrl && environment.supabaseKey) {
-      this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
-    }
-  }
 
   async fazerLogin(email: string, senha: string): Promise<boolean> {
     if (!this.supabase) return false;
@@ -26,9 +19,9 @@ export class AuthService {
     const { data, error } = await this.supabase
       .from('usuarios')
       .select('id, nome, email, tipo')
-      .eq('email', email)
+      .eq('email', email.trim().toLowerCase())
       .eq('senha', senha)
-      .single();
+      .maybeSingle();
 
     if (data && !error) {
       this.usuarioAtual.set(data as Usuario);
@@ -37,20 +30,22 @@ export class AuthService {
     return false;
   }
 
-  async cadastrar(nome: string, email: string, senha: string, tipo: 'ADMIN' | 'MOTORISTA'): Promise<boolean> {
-    if (!this.supabase) return false;
+  async cadastrar(nome: string, email: string, senha: string, tipo: 'ADMIN' | 'MOTORISTA'): Promise<{ ok: boolean; mensagem?: string }> {
+    if (!this.supabase) return { ok: false, mensagem: 'Serviço indisponível.' };
 
     const { data, error } = await this.supabase
       .from('usuarios')
-      .insert([{ nome, email, senha, tipo }])
+      .insert([{ nome: nome.trim(), email: email.trim().toLowerCase(), senha, tipo }])
       .select('id, nome, email, tipo')
       .single();
 
     if (data && !error) {
       this.usuarioAtual.set(data as Usuario);
-      return true;
+      return { ok: true };
     }
-    return false;
+    // 23505 = violação de unicidade (e-mail já cadastrado)
+    if (error?.code === '23505') return { ok: false, mensagem: 'Este e-mail já está cadastrado.' };
+    return { ok: false, mensagem: 'Erro ao cadastrar. Verifique os dados.' };
   }
 
   fazerLogout(): void {

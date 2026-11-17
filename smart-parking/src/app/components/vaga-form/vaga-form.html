@@ -1,4 +1,4 @@
-<form class="form-nova-vaga" (ngSubmit)="salvar()">
+<form class="form-nova-vaga" (ngSubmit)="salvar()" novalidate>
   <div class="form-title">
     <h3>Cadastrar Novo Sensor</h3>
     <span class="hint">Clique no mapa para pegar a posição</span>
@@ -7,12 +7,18 @@
   <div class="form-row">
     <div class="form-group">
       <label>Código da Vaga</label>
-      <input type="text" [(ngModel)]="codigo" name="codigo" placeholder="Ex: C-01" required />
+      <input type="text" [(ngModel)]="codigo" name="codigo" placeholder="Ex: C-01"
+        [maxlength]="LIMITES.CODIGO_VAGA_MAX" required style="text-transform: uppercase;"
+        [class.invalido]="tentouEnviar && erroCodigo" />
+      @if (tentouEnviar && erroCodigo) { <small class="erro-campo">{{ erroCodigo }}</small> }
     </div>
 
     <div class="form-group">
       <label>Tarifa (R$/h)</label>
-      <input type="number" step="0.50" [(ngModel)]="preco_hora" name="preco_hora" required />
+      <input type="number" step="0.50" [min]="LIMITES.PRECO_MIN" [max]="LIMITES.PRECO_MAX"
+        [(ngModel)]="preco_hora" name="preco_hora" required
+        [class.invalido]="tentouEnviar && erroPreco" />
+      @if (tentouEnviar && erroPreco) { <small class="erro-campo">{{ erroPreco }}</small> }
     </div>
   </div>
 
@@ -47,9 +53,10 @@
       <input type="number" step="0.000001" [(ngModel)]="lng" name="lng" required />
     </div>
   </div>
+  @if (tentouEnviar && erroCoordenadas) { <small class="erro-campo">{{ erroCoordenadas }}</small> }
 
   <div class="form-actions">
     <button type="button" class="btn-cancelar" (click)="fechar.emit()">Cancelar</button>
-    <button type="submit" class="btn-salvar" [disabled]="!codigo.trim()">Salvar Vaga</button>
+    <button type="submit" class="btn-salvar" [disabled]="salvando">Salvar Vaga</button>
   </div>
 </form>
