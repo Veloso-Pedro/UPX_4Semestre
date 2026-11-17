@@ -370,65 +370,53 @@
 }
 
 /* =========================================================
-   RESPONSIVIDADE (MOBILE / ESTILO APP NATIVO)
+   RESPONSIVIDADE (MOBILE / SPLIT SCREEN 50-50)
 ========================================================= */
 @media (max-width: 768px) {
   body, html {
     overflow: hidden !important;
     height: 100vh !important;
-    margin: 0;
-    padding: 0;
   }
 
   .kpis {
-    display: none !important; 
+    display: none !important;
+  }
+
+  .main-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 80px) !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    overflow: hidden !important;
   }
 
   .map-section, #mapa-vagas {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 0 !important;
-    border-radius: 0 !important;
+    flex: 1 1 50% !important;
+    width: 100% !important;
+    height: 50% !important;
+    min-height: 50% !important;
     margin: 0 !important;
-  }
-
-  .topbar {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 10 !important;
-    background-color: rgba(15, 23, 42, 0.95) !important;
-    border-bottom: 1px solid #334155;
+    border-radius: 0 !important;
   }
 
   .vagas-sidebar {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 50vh !important;
+    flex: 1 1 50% !important;
+    width: 100% !important;
+    height: 50% !important;
+    min-height: 50% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    overflow-y: auto !important;
+    
     background-color: #1e293b !important;
     border-top-left-radius: 24px !important;
     border-top-right-radius: 24px !important;
-    border: none !important;
-    box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.6) !important;
-    z-index: 1000 !important;
-    overflow-y: auto !important;
-    padding: 24px 20px 80px 20px !important;
-    margin: 0 !important;
-  }
-
-  .vagas-sidebar::before {
-    content: '';
-    display: block;
-    width: 40px;
-    height: 5px;
-    background-color: #64748b;
-    border-radius: 10px;
-    margin: -10px auto 20px auto;
+    border-top: 2px solid #334155 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
   }
 }
