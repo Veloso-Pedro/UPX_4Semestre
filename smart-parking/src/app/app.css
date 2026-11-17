@@ -370,12 +370,12 @@
 }
 
 /* =========================================================
-   RESPONSIVIDADE (MOBILE / SPLIT SCREEN 50-50)
+   RESPONSIVIDADE (MOBILE)
 ========================================================= */
 @media (max-width: 768px) {
   body, html {
-    overflow: hidden !important;
-    height: 100vh !important;
+    overflow: auto !important;
+    height: auto !important;
   }
 
   .kpis {
@@ -385,38 +385,31 @@
   .main-grid {
     display: flex !important;
     flex-direction: column !important;
-    height: calc(100vh - 80px) !important;
+    gap: 16px !important;
+    padding: 10px !important;
+    height: auto !important;
+  }
+
+  .map-section {
     width: 100% !important;
-    margin: 0 !important;
+    height: 400px !important;
+    min-height: 400px !important;
     padding: 0 !important;
-    gap: 0 !important;
+    margin: 0 !important;
     overflow: hidden !important;
   }
 
-  .map-section, #mapa-vagas {
-    flex: 1 1 50% !important;
+  #mapa-vagas {
     width: 100% !important;
-    height: 50% !important;
-    min-height: 50% !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
+    height: 100% !important;
+    min-height: 400px !important;
   }
-
   .vagas-sidebar {
-    flex: 1 1 50% !important;
     width: 100% !important;
-    height: 50% !important;
-    min-height: 50% !important;
-    margin: 0 !important;
+    height: auto !important;
+    min-height: 300px !important;
+    border-radius: 12px !important;
     padding: 16px !important;
-    overflow-y: auto !important;
-    
-    background-color: #1e293b !important;
-    border-top-left-radius: 24px !important;
-    border-top-right-radius: 24px !important;
-    border-top: 2px solid #334155 !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-bottom: none !important;
+    border: 1px solid #334155 !important;
   }
 }
