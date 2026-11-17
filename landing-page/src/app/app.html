@@ -1,124 +1,208 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Parking | Gestão Inteligente de Mobilidade Urbana</title>
-</head>
-<body>
-    <header class="header">
-        <div class="container">
-            <a href="#" class="logo">🚗 Smart Parking</a>
-            <nav class="nav-menu">
-                <ul class="nav-list">
-                    <li><a href="#beneficios">Benefícios</a></li>
-                    <li><a href="#motoristas">Para Motoristas</a></li>
-                    <li><a href="#gestores">Para Gestores</a></li>
-                </ul>
-            </nav>
-            <div class="auth-buttons">
-                <a href="/login" class="btn btn-outline">Entrar</a>
-                <a href="/cadastro" class="btn btn-primary">Cadastre-se</a>
-            </div>
-        </div>
-    </header>
-    <main>
-        <section class="hero" id="home">
-            <div class="container hero-content">
-                <div class="hero-text">
-                    <h1>A revolução na gestão de estacionamentos em Sorocaba</h1>
-                    <p>O Smart Parking conecta motoristas a vagas disponíveis em tempo real. Estacione sem estresse ou gerencie seu pátio com inteligência de dados e painéis de BI.</p>
-                    <div class="hero-cta">
-                        <a href="#motoristas" class="btn btn-primary btn-large">Quero Estacionar</a>
-                        <a href="#gestores" class="btn btn-secondary btn-large">Sou Proprietário</a>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <img src="assets/hero-mockup.png" alt="Dashboard e Mapa do Smart Parking" />
-                </div>
-            </div>
-        </section>
-        <section class="features" id="motoristas">
-            <div class="container">
-                <h2>Para quem dirige: Agilidade e Transparência</h2>
-                <p class="section-subtitle">Chega de rodar quarteirões procurando vaga. Tudo na palma da sua mão.</p>
-                
-                <div class="grid-3">
-                    <div class="card-feature">
-                        <span class="icon">🗺️</span>
-                        <h3>Mapa em Tempo Real</h3>
-                        <p>Visualize as vagas livres, ocupadas e reservadas na cidade através de um mapa interativo atualizado instantaneamente.</p>
-                    </div>
-                    <div class="card-feature">
-                        <span class="icon">⏳</span>
-                        <h3>Reserva Garantida</h3>
-                        <p>Garanta sua vaga com antecedência. Você tem até 30 minutos de prazo para chegar e realizar o check-in no local.</p>
-                    </div>
-                    <div class="card-feature">
-                        <span class="icon">💳</span>
-                        <h3>Tarifação Justa</h3>
-                        <p>Pague apenas pelo tempo reservado. Conta com 10 minutos de tolerância na saída antes de novas cobranças.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="features bg-dark" id="gestores">
-            <div class="container">
-                <h2>Para gestores: Controle Total e Rentabilidade</h2>
-                <p class="section-subtitle">Um painel completo (Multi-tenant) exclusivo para o seu negócio.</p>
-                
-                <div class="grid-3">
-                    <div class="card-feature">
-                        <span class="icon">📊</span>
-                        <h3>Business Intelligence</h3>
-                        <p>Acompanhe o faturamento, taxa de ocupação e o potencial máximo de receita do seu estacionamento ao vivo.</p>
-                    </div>
-                    <div class="card-feature">
-                        <span class="icon">📍</span>
-                        <h3>Mapeamento de Sensores</h3>
-                        <p>Adicione novas vagas clicando diretamente no mapa. Cada sensor é sincronizado instantaneamente com o sistema.</p>
-                    </div>
-                    <div class="card-feature">
-                        <span class="icon">🔒</span>
-                        <h3>Gestão Isolada</h3>
-                        <p>Ambiente seguro e exclusivo. Você gerencia apenas o seu inventário de vagas, sem interferência externa.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="cta-banner">
-            <div class="container text-center">
-                <h2>Pronto para otimizar sua mobilidade urbana?</h2>
-                <p>Junte-se à plataforma que está modernizando o trânsito e o uso do espaço urbano.</p>
-                <a href="/cadastro" class="btn btn-primary btn-large">Criar Minha Conta Gratuita</a>
-            </div>
-        </section>
-    </main>
-    <footer class="footer">
-        <div class="container footer-grid">
-            <div class="footer-brand">
-                <h3>🚗 Smart Parking</h3>
-                <p>Gestão Inteligente de Mobilidade Urbana.</p>
-                <p><small>Projeto Acadêmico - UPX IV (UniFacens)</small></p>
-            </div>
-            <div class="footer-links">
-                <h4>Produto</h4>
-                <ul>
-                    <li><a href="#motoristas">Para Motoristas</a></li>
-                    <li><a href="#gestores">Para Gestores</a></li>
-                    <li><a href="/login">Login</a></li>
-                </ul>
-            </div>
-            <div class="footer-contact">
-                <h4>Contato</h4>
-                <p>Sorocaba, SP - Brasil</p>
-                <p>contato@smartparking.com.br</p>
-            </div>
-        </div>
-        <div class="footer-bottom text-center">
-            <p>&copy; 2026 Smart Parking. Todos os direitos reservados.</p>
-        </div>
-    </footer>
+<header class="header">
+  <div class="container header-inner">
+    <a href="#home" class="logo" (click)="fecharMenu()">🚗 Smart Parking</a>
 
-</body>
-</html>
+    <button type="button" class="menu-toggle" [attr.aria-expanded]="menuAberto()" aria-controls="menu-principal"
+      aria-label="Abrir menu" (click)="alternarMenu()">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav id="menu-principal" class="nav" [class.aberto]="menuAberto()">
+      <ul class="nav-list">
+        <li><a href="#beneficios" (click)="fecharMenu()">Benefícios</a></li>
+        <li><a href="#como-funciona" (click)="fecharMenu()">Como Funciona</a></li>
+        <li><a href="#motoristas" (click)="fecharMenu()">Para Motoristas</a></li>
+        <li><a href="#gestores" (click)="fecharMenu()">Para Gestores</a></li>
+      </ul>
+      <div class="auth-buttons">
+        <a [href]="urlSistema" class="btn btn-outline">Entrar</a>
+        <a [href]="urlSistema" class="btn btn-primary">Cadastre-se</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="container hero-content">
+      <div class="hero-text">
+        <span class="tag">📍 Sorocaba · SP</span>
+        <h1>A revolução na gestão de estacionamentos em <span class="destaque">Sorocaba</span></h1>
+        <p>
+          O Smart Parking conecta motoristas a vagas disponíveis em tempo real. Estacione sem estresse
+          ou gerencie seu pátio com inteligência de dados e painéis de BI.
+        </p>
+        <div class="hero-cta">
+          <a [href]="urlSistema" class="btn btn-primary btn-large">Acessar o Sistema →</a>
+          <a href="#como-funciona" class="btn btn-secondary btn-large">Como funciona</a>
+        </div>
+      </div>
+
+      <!-- Mockup ilustrativo do app (feito em HTML/CSS, sem imagem externa) -->
+      <div class="hero-mockup" aria-hidden="true">
+        <div class="mockup-janela">
+          <div class="mockup-barra">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="mockup-corpo">
+            <div class="mockup-mapa">
+              <span class="pino livre" style="top: 22%; left: 18%;"></span>
+              <span class="pino ocupada" style="top: 40%; left: 52%;"></span>
+              <span class="pino livre" style="top: 64%; left: 30%;"></span>
+              <span class="pino reservada" style="top: 30%; left: 78%;"></span>
+              <span class="pino livre" style="top: 72%; left: 70%;"></span>
+            </div>
+            <div class="mockup-lista">
+              <div class="mockup-card livre"><strong>A-01</strong><small>Livre · R$ 6,00/h</small></div>
+              <div class="mockup-card reservada"><strong>B-01</strong><small>Libera em 1h 20min</small></div>
+              <div class="mockup-card ocupada"><strong>A-02</strong><small>Ocupada</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFÍCIOS -->
+  <section class="beneficios" id="beneficios">
+    <div class="container">
+      <div class="grid-4">
+        <div class="beneficio">
+          <strong>⏱️ Tempo real</strong>
+          <p>Status das vagas atualizado na hora pelos sensores.</p>
+        </div>
+        <div class="beneficio">
+          <strong>🔒 Reserva</strong>
+          <p>Garanta a vaga de 1 até 48 horas antes de sair de casa.</p>
+        </div>
+        <div class="beneficio">
+          <strong>📱 Mobile</strong>
+          <p>Funciona no celular e no computador, direto do navegador.</p>
+        </div>
+        <div class="beneficio">
+          <strong>📊 BI</strong>
+          <p>Faturamento e ocupação ao vivo para o gestor.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="secao" id="como-funciona">
+    <div class="container">
+      <h2>Como funciona</h2>
+      <p class="section-subtitle">Do celular até a vaga em quatro passos.</p>
+
+      <ol class="passos">
+        <li>
+          <span class="passo-num">1</span>
+          <h3>Encontre</h3>
+          <p>Veja no mapa as vagas livres perto de você e filtre por tipo, preço ou status.</p>
+        </li>
+        <li>
+          <span class="passo-num">2</span>
+          <h3>Reserve</h3>
+          <p>Escolha de 1 a 48 horas e confirme. O valor aparece antes de você confirmar.</p>
+        </li>
+        <li>
+          <span class="passo-num">3</span>
+          <h3>Faça o check-in</h3>
+          <p>Você tem 30 minutos para chegar e digitar o código da vaga.</p>
+        </li>
+        <li>
+          <span class="passo-num">4</span>
+          <h3>Estacione</h3>
+          <p>Acompanhe o tempo restante pelo app e libere a vaga quando sair.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- MOTORISTAS -->
+  <section class="secao bg-alt" id="motoristas">
+    <div class="container">
+      <h2>Para quem dirige: agilidade e transparência</h2>
+      <p class="section-subtitle">Chega de rodar quarteirões procurando vaga. Tudo na palma da sua mão.</p>
+
+      <div class="grid-3">
+        <div class="card-feature">
+          <span class="icon">🗺️</span>
+          <h3>Mapa em Tempo Real</h3>
+          <p>Visualize as vagas livres, ocupadas e reservadas através de um mapa interativo atualizado instantaneamente.</p>
+        </div>
+        <div class="card-feature">
+          <span class="icon">⏳</span>
+          <h3>Reserva Garantida</h3>
+          <p>Garanta sua vaga com antecedência. Você tem até 30 minutos de prazo para chegar e realizar o check-in no local.</p>
+        </div>
+        <div class="card-feature">
+          <span class="icon">💳</span>
+          <h3>Tarifação Justa</h3>
+          <p>Pague apenas pelo tempo reservado, com 10 minutos de tolerância na saída antes de novas cobranças.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GESTORES -->
+  <section class="secao" id="gestores">
+    <div class="container">
+      <h2>Para gestores: controle total e rentabilidade</h2>
+      <p class="section-subtitle">Um painel completo e exclusivo para o seu negócio.</p>
+
+      <div class="grid-3">
+        <div class="card-feature">
+          <span class="icon">📊</span>
+          <h3>Business Intelligence</h3>
+          <p>Acompanhe o faturamento, a taxa de ocupação e o potencial máximo de receita do seu estacionamento ao vivo.</p>
+        </div>
+        <div class="card-feature">
+          <span class="icon">📍</span>
+          <h3>Mapeamento de Sensores</h3>
+          <p>Adicione novas vagas clicando diretamente no mapa. Cada sensor é sincronizado instantaneamente com o sistema.</p>
+        </div>
+        <div class="card-feature">
+          <span class="icon">🔒</span>
+          <h3>Gestão Isolada</h3>
+          <p>Ambiente seguro e exclusivo. Você gerencia apenas o seu inventário de vagas, sem interferência externa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="container text-center">
+      <h2>Pronto para otimizar sua mobilidade urbana?</h2>
+      <p>Junte-se à plataforma que está modernizando o trânsito e o uso do espaço urbano.</p>
+      <a [href]="urlSistema" class="btn btn-light btn-large">Criar Minha Conta Gratuita</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <h3>🚗 Smart Parking</h3>
+      <p>Gestão Inteligente de Mobilidade Urbana.</p>
+      <p><small>Projeto Acadêmico - UPX IV (UniFacens)</small></p>
+    </div>
+    <div class="footer-links">
+      <h4>Produto</h4>
+      <ul>
+        <li><a href="#motoristas">Para Motoristas</a></li>
+        <li><a href="#gestores">Para Gestores</a></li>
+        <li><a [href]="urlSistema">Acessar o Sistema</a></li>
+      </ul>
+    </div>
+    <div class="footer-contact">
+      <h4>Contato</h4>
+      <p>Sorocaba, SP - Brasil</p>
+      <p>contato&#64;smartparking.com.br</p>
+    </div>
+  </div>
+  <div class="footer-bottom text-center">
+    <p>&copy; {{ anoAtual }} Smart Parking. Todos os direitos reservados.</p>
+  </div>
+</footer>

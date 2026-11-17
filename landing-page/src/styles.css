@@ -1,1 +1,116 @@
-/* You can add global styles to this file, and also import other style files */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Compensa o header fixo ao navegar pelas âncoras */
+  scroll-padding-top: 80px;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #0f172a;
+  color: #f8fafc;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+/* Paleta igual à do sistema Smart Parking */
+:root {
+  --bg: #0f172a;
+  --bg-alt: #111c33;
+  --card: #1e293b;
+  --borda: #334155;
+  --texto: #f8fafc;
+  --texto-suave: #94a3b8;
+  --verde: #22c55e;
+  --verde-escuro: #16a34a;
+  --azul: #2563eb;
+  --amarelo: #eab308;
+  --vermelho: #ef4444;
+}
+
+.container {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.15s, background-color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: var(--verde);
+  color: #052e16;
+}
+
+.btn-primary:hover {
+  background: #4ade80;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--texto);
+  border-color: var(--borda);
+}
+
+.btn-secondary:hover {
+  border-color: var(--texto-suave);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--texto);
+  border-color: var(--borda);
+}
+
+.btn-outline:hover {
+  border-color: var(--verde);
+  color: var(--verde);
+}
+
+.btn-light {
+  background: #ffffff;
+  color: #052e16;
+}
+
+.btn-large {
+  padding: 14px 28px;
+  font-size: 1.05rem;
+}
+

@@ -1,12 +1,22 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('landing-page');
+  /** Endereço do sistema Smart Parking publicado. */
+  protected readonly urlSistema = 'https://smart-parking-74f.pages.dev/';
+  protected readonly anoAtual = new Date().getFullYear();
+
+  protected readonly menuAberto = signal(false);
+
+  alternarMenu(): void {
+    this.menuAberto.update(aberto => !aberto);
+  }
+
+  fecharMenu(): void {
+    this.menuAberto.set(false);
+  }
 }
